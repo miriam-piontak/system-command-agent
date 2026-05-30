@@ -1,0 +1,143 @@
+<!-- AI Agent Shell -->
+<div class="app-shell" dir="rtl">
+
+  <div class="background-glow"></div>
+
+  <div class="agent-card">
+
+    <!-- HEADER -->
+    <div class="hero-section">
+
+      <div class="ai-badge">
+        <span class="dot"></span>
+        AI SYSTEM ONLINE
+      </div>
+
+      <h1 class="main-title">
+        System Command Agent
+      </h1>
+
+      <p class="intro" id="intro2">
+הכלי הבא שלכם נמצא במרחק הקלדה אחת
+      </p>
+      <p class="intro" >
+כתבו את שם הכלי שאתם מחפשים ואנחנו נדאג לפתוח אותו
+      </p> 
+           <p class="intro">
+התחילו להקליד כאן... ✨
+      </p>
+    </div>
+
+    <!-- INPUT AREA -->
+    <div class="input-wrapper">
+
+      <textarea
+        class="agent-input"
+        [(ngModel)]="userText"
+        placeholder="לדוגמה: פתח מחשבון / אני רוצה דפדפן / שעון בבקשה"
+        aria-label="בקשת משתמש"
+      ></textarea>
+
+
+
+    </div>
+
+    <!-- STATUS -->
+
+
+    <!-- TOOL SHORTCUTS -->
+    <div class="tool-shortcuts" *ngIf="tools.length">
+      <div class="tool-button" *ngFor="let t of tools">
+        <button (click)="sendTool(t.id)" [disabled]="loading">{{ t.name }}</button>
+      </div>
+    </div>
+<br>      <button
+        class="primary-button"
+        [disabled]="loading"
+        (click)="sendRequest()"
+      >
+
+        <span *ngIf="!loading">שלח פקודה</span>
+        <span *ngIf="loading">מעבד בקשה...</span>
+
+      </button>
+    <!-- ERROR -->
+    <div *ngIf="error" class="error-note">
+      {{ error }}
+    </div>
+
+    <!-- RESPONSE PANEL -->
+    <div
+      *ngIf="response"
+      class="response-panel"
+      role="status"
+      aria-live="polite"
+    >
+
+      <div class="response-header">
+
+        <div class="tool-info">
+
+          <div class="tool-icon">
+            ⚡
+          </div>
+
+          <div>
+
+            <h3>
+              {{ toolName }}
+            </h3>
+
+            <div class="tool-sub">
+              AI Agent Response
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="tool-avatar">
+          AI
+        </div>
+
+      </div>
+
+      <!-- SUCCESS -->
+      <app-success-response
+        *ngIf="response.type === 'supported'"
+        [message]="response.message"
+      >
+      </app-success-response>
+
+      <!-- UNSUPPORTED -->
+      <app-unsupported-response
+        *ngIf="response.type === 'unsupported'"
+        [message]="response.message"
+      >
+      </app-unsupported-response>
+
+      <!-- IRRELEVANT -->
+      <app-irrelevant-response
+        *ngIf="response.type === 'irrelevant'"
+        [message]="response.message"
+      >
+      </app-irrelevant-response>
+
+      <!-- ERROR -->
+      <div *ngIf="response.type === 'error'" class="resp error">
+
+        <div class="resp-title">
+          System Error
+        </div>
+
+        <div class="resp-body">
+          {{ response.message }}
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

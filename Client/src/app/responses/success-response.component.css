@@ -1,0 +1,4 @@
+/* Styles for the success response card. */
+.resp.success{border-left:4px solid #10b981;padding:12px 14px;border-radius:8px;background:linear-gradient(180deg, rgba(16,185,129,0.04), transparent)}
+.resp-title{font-weight:700;margin-bottom:6px;color:#e6fdf3}
+.resp-body{color:#d1fae5}

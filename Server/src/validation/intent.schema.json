@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["SUPPORTED_ACTION", "UNSUPPORTED_ACTION", "IRRELEVANT_REQUEST"]
+    },
+    "tool": {
+      "type": "string",
+      "enum": ["calculator", "browser", "clock", "calendar", "downloads", "screenshot", "recycle", "fileExplorer", "notes", "terminal", "settings"]
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": ["type", "message"],
+  "additionalProperties": false,
+  "if": {
+    "properties": {
+      "type": { "const": "SUPPORTED_ACTION" }
+    }
+  },
+  "then": {
+    "required": ["tool"]
+  }
+}

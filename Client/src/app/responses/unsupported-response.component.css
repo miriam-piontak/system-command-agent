@@ -1,0 +1,4 @@
+/* Styles for the unsupported response card. */
+.resp.warn{border-left:4px solid #f97316;padding:12px 14px;border-radius:8px;background:linear-gradient(180deg, rgba(249,115,22,0.04), transparent)}
+.resp-title{font-weight:700;margin-bottom:6px;color:#fff7ed}
+.resp-body{color:#ffedd5}
