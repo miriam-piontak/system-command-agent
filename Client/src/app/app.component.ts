@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { AgentResponse } from './models/agent-response.model';
 import { AgentService } from './agent.service';
-import { OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +8,19 @@ import { OnInit } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  tools: { id: string; name: string }[] = [];
+  tools = [
+    { id: 'calculator', name: 'מחשבון' },
+    { id: 'browser', name: 'דפדפן' },
+    { id: 'clock', name: 'שעון' },
+    { id: 'calendar', name: 'לוח שנה' },
+    { id: 'downloads', name: 'הורדות' },
+    { id: 'screenshot', name: 'צילום מסך' },
+    { id: 'recycle', name: 'סל מיחזור' },
+    { id: 'terminal', name: 'טרמינל' },
+    { id: 'settings', name: 'הגדרות' },
+    { id: 'fileExplorer', name: 'סייר קבצים' },
+    { id: 'notes', name: 'פתקים' }
+  ];
   userText = '';
   response: AgentResponse | null = null;
   error = '';
@@ -17,19 +28,6 @@ export class AppComponent {
   toolName = 'ToolBot';
 
   constructor(private agentService: AgentService) {}
-
-  ngOnInit(): void {
-    // קבל את רשימת הכלים מהשרת כדי להציג כפתורים בתחתית התיבה
-    this.agentService.getTools().subscribe({
-      next: (res) => {
-        this.tools = res.tools || [];
-      },
-      error: () => {
-        // בשגיאה — נשאר ללא כפתורים (אפשר להוסיף ברירת מחדל)
-        this.tools = [];
-      }
-    });
-  }
 
   // שלח בקשה שמיועדת לפתיחת כלי ספציפי
   sendTool(toolId: string): void {

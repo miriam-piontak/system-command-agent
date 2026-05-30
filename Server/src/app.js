@@ -3,7 +3,6 @@
 const express = require('express');
 const cors = require('cors');
 const agentRoute = require('./routes/agent.route');
-const toolsRoute = require('./routes/tools.route');
 const errorHandler = require('./utils/error-handler');
 
 const app = express();
@@ -13,7 +12,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/agent', agentRoute);
-app.use('/api/tools', toolsRoute);
 
 app.use(errorHandler);
 
