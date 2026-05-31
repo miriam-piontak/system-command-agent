@@ -6,7 +6,8 @@
 const OpenAI = require('openai');
 const validationService = require('./validation.service');
 const openaiConfig = require('../config/openai.config');
-const { SYSTEM_COMMAND_AGENT_PROMPT } = require('../../agentPrompts');
+const retryConfig = require('../config/retry.config');
+const { SYSTEM_COMMAND_AGENT_PROMPT } = require('../../../agentPrompts');
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -40,42 +41,58 @@ const functionDefinition = {
 // Send the user text to OpenAI and parse the function call response.
 // The response must be a JSON object that describes the user intent.
 async function classifyText(text) {
-  const response = await client.chat.completions.create({
-    model: openaiConfig.model,
-    messages: [
-      {
-        role: 'system',
-        content: SYSTEM_COMMAND_AGENT_PROMPT
-      },
-      {
-        role: 'user',
-        content: text
+  let attempt = 0;
+  let lastError = null;
+
+  while (attempt <= retryConfig.MAX_INTENT_RETRIES) {
+    try {
+      const response = await client.chat.completions.create({
+        model: openaiConfig.model,
+        messages: [
+          {
+            role: 'system',
+            content: SYSTEM_COMMAND_AGENT_PROMPT
+          },
+          {
+            role: 'user',
+            content: text
+          }
+        ],
+        functions: [functionDefinition],
+        function_call: { name: 'classify_request' },
+        temperature: 0.0
+      });
+
+      const choice = response.choices?.[0];
+      if (!choice || !choice.message?.function_call?.arguments) {
+        throw new Error('OpenAI did not return a valid function call response.');
       }
-    ],
-    functions: [functionDefinition],
-    function_call: { name: 'classify_request' },
-    temperature: 0.0
-  });
 
-  const choice = response.choices?.[0];
-  if (!choice || !choice.message?.function_call?.arguments) {
-    throw new Error('OpenAI did not return a valid function call response.');
+      const argumentsText = choice.message.function_call.arguments;
+      let parsed;
+      try {
+        parsed = JSON.parse(argumentsText);
+      } catch (error) {
+        throw new Error('Failed to parse OpenAI function call arguments as JSON.');
+      }
+
+      const validation = validationService.validateIntent(parsed);
+      if (!validation.valid) {
+        throw new Error('OpenAI intent response failed schema validation.');
+      }
+
+      return parsed;
+    } catch (err) {
+      lastError = err;
+      attempt += 1;
+      if (attempt > retryConfig.MAX_INTENT_RETRIES) break;
+      // small backoff before retrying
+      await new Promise((resolve) => setTimeout(resolve, retryConfig.INTENT_RETRY_DELAY_MS || 300));
+    }
   }
 
-  const argumentsText = choice.message.function_call.arguments;
-  let parsed;
-  try {
-    parsed = JSON.parse(argumentsText);
-  } catch (error) {
-    throw new Error('Failed to parse OpenAI function call arguments as JSON.');
-  }
-
-  const validation = validationService.validateIntent(parsed);
-  if (!validation.valid) {
-    throw new Error('OpenAI intent response failed schema validation.');
-  }
-
-  return parsed;
+  // All attempts failed — surface the last error for logging/handling upstream.
+  throw new Error(`OpenAI classification failed after ${retryConfig.MAX_INTENT_RETRIES + 1} attempts: ${lastError?.message || 'unknown error'}`);
 }
 
 module.exports = {

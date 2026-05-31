@@ -62,5 +62,22 @@
 3. בשורש הלקוח: `npm install`
 4. הפעלת הלקוח: `npm start` (Angular)
 
+## Prompt files
+- Canonical system prompt: `agentPrompts.js` (root) — זהו הטקסט המדויק שנשלח כ־system prompt ל‑OpenAI.
+- Prompt documentation: `PROMPT_README.md` (root) — תיעוד מלא של הפרומפט, ה‑function schema ודוגמאות.
+
+## Reports
+- Canonical smoke-test outputs: `reports/tool-outputs.jsonl` — JSONL עם דוגמות תגובה לכל כלי ולתרחישים (supported/unsupported/irrelevant/error).
+
+## Preparing for GitHub
+1. ודא שאין מפתחות או סודות בקבצים (`.env` לא ישותף).
+2. קבצים לא להעלות: `node_modules/`, `logs/`, `reports/tool-outputs.jsonl` (מופיע גם ב־.gitignore כברירת מחדל).
+3. פקודות לדחיפה ל־GitHub:
+```bash
+git add .
+git commit -m "Add prompt, prompt README, reports, and .gitignore"
+git push origin main
+```
+
 ## הערות
 - השירות משתמש ב־`/api/agent` בלבד כאינטגרציה עם הלקוח.

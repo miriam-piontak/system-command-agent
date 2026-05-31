@@ -1,0 +1,17 @@
+{"tool":"calculator","scenario":"supported","response":{"type":"supported","message":"המחשבון פתוח ומוכן, תתחיל לספור!","tool":"calculator","details":null}}
+{"tool":"browser","scenario":"supported","response":{"type":"supported","message":"הדפדפן נפתח — גלישה נעימה!","tool":"browser","details":null}}
+{"tool":"clock","scenario":"supported","response":{"type":"supported","message":"השעה עבדה — השעון מוכן להודיע לך!","tool":"clock","details":null}}
+{"tool":"calendar","scenario":"supported","response":{"type":"supported","message":"לוח השנה נפתח — אל תשכח לתכנן את הפיקניק!","tool":"calendar","details":null}}
+{"tool":"downloads","scenario":"supported","response":{"type":"supported","message":"תיקיית ההורדות נפתחה — קבצים מחכים לך!","tool":"downloads","details":null}}
+{"tool":"screenshot","scenario":"supported","response":{"type":"supported","message":"צילמתי מסך — תבדוק אם הכל תופס במקום הנכון.","tool":"screenshot","details":null}}
+{"tool":"recycle","scenario":"supported","response":{"type":"supported","message":"סל המיחזור נפתח — אל תדאג, הקבצים לא ילכו לשום מקום עד שתגיד כן.","tool":"recycle","details":null}}
+{"tool":"fileExplorer","scenario":"supported","response":{"type":"supported","message":"סייר הקבצים נפתח — חפש את הקובץ המיוחל!","tool":"fileExplorer","details":null}}
+{"tool":"notes","scenario":"supported","response":{"type":"supported","message":"פתק חדש מוכן — כתוב משהו פיקנטי.","tool":"notes","details":null}}
+{"tool":"terminal","scenario":"supported","response":{"type":"supported","message":"טרמינל מוכן — אל תשכח להגיד סוד ל־bash.","tool":"terminal","details":null}}
+{"tool":"settings","scenario":"supported","response":{"type":"supported","message":"הגדרות נפתחות — תשנה רק מה שאתה יודע להחזיר.","tool":"settings","details":null}}
+
+{"tool":null,"scenario":"unsupported","response":{"type":"unsupported","message":"מצטערים, פעולה זו עדיין אינה נתמכת.","tool":null,"details":null}}
+
+{"tool":null,"scenario":"irrelevant","response":{"type":"irrelevant","message":"אני סוכן מערכת שמפעיל כלים במחשב. לא אוכל לספק את הבקשה הזו — מה תרצה שאפתח במקום זאת?","tool":null,"details":null}}
+
+{"tool":null,"scenario":"error","response":{"type":"error","message":"השרת נתקל בשגיאה בלתי צפויה.","tool":null,"details":{"error":"Example: invalid input or internal failure"}}}
