@@ -1,83 +1,95 @@
 # System Command Agent
 
--שם המגישה: מרים פיונטק
-- קורס: AI: שימוש הנדסי, אינטגרציה וארכיטקטורה
-- תיאור: אפליקציית Agent שמסוגלת לזהות בקשות משתמש ולפתוח כלים בסיסיים במחשב.
+Submitter: Miriam Piontak
+Course: AI: Engineering, Integration & Architecture
 
-## כלי מערכת מומשו
-- `calculator` — פתיחת מחשבון
-- `browser` — פתיחת דפדפן
-- `clock` — פתיחת שעון
-- `calendar` — פתיחת לוח שנה
-- `downloads` — פתיחת תיקיית הורדות
-- `screenshot` — צילום מסך
-- `recycle` — פתיחת סל מיחזור
-- `fileExplorer` — פתיחת סייר קבצים
-- `notes` — פתיחת פנקס פתקים
-- `terminal` — פתיחת טרמינל
-- `settings` — פתיחת הגדרות מערכת
+Description
+-----------
+System Command Agent is a client-server application that classifies short user text requests and executes simple desktop tools when applicable. The system returns structured JSON responses that the client UI renders.
 
-## ארכיטקטורה
-### Client
-- Angular application עם תיבת טקסט, כפתור `שלח`, ורכיבי תצוגה נפרדים לכל `type`:
+Implemented tools
+-----------------
+- `calculator` — open calculator
+- `browser` — open web browser
+- `clock` — open clock
+- `calendar` — open calendar
+- `downloads` — open downloads folder
+- `screenshot` — take a screenshot
+- `recycle` — open recycle bin
+- `fileExplorer` — open file explorer
+- `notes` — open notes app
+- `terminal` — open terminal
+- `settings` — open system settings
+
+Architecture
+------------
+Client
+- Angular single-page application with a text input, send button, and three response components:
   - `app-success-response`
   - `app-unsupported-response`
   - `app-irrelevant-response`
-- הלקוח שולח את הבקשה אל ה־API היחיד של השרת (`/api/agent`).
-- התצוגה מתעדכנת לפי `type` של התגובה.
+- The client sends requests to a single server endpoint: `POST /api/agent` and updates the UI based on the response `type`.
 
-### Server
-- Express backend עם נקודת גישה אחת: `POST /api/agent`.
-- Agent מבצע:
-  - הסרת תנאים ובדיקות עבור בקשת משתמש
-  - קריאת OpenAI לניתוח כוונה
-  - בדיקת כלי נתמך
-  - הפעלת `Tool` מתאים
-  - החזרת JSON תקין ומובנה
-- JSON Schema משמש לאימות בקשות ותגובות.
-- קיימת לוגיקה של Retry עבור תוצאות שאינן תקינות.
-- פעולות שגיאה מטופלות באמצעות middleware שמחזיר JSON תקין.
+Server
+- Express backend exposing `POST /api/agent`.
+- The agent flow:
+  1. Validate incoming request JSON.
+  2. Send system prompt + user text to OpenAI (function-calling) to classify intent.
+  3. Fallback: local keyword classifier when AI is unavailable.
+  4. Execute a supported tool when applicable.
+  5. Validate and return a structured JSON response.
+- JSON Schema (AJV) validates requests and responses.
+- Retry logic is applied when AI returns invalid/malformed JSON; response building also retries before returning an error.
+- Errors are handled by middleware and logged to `Server/src/logs/agent.log`.
 
-## דרישות מימוש
-- `UNDERSTAND`: המערכת מזהה את בקשת המשתמש.
-- `COMPUTER ACTION`: מזהה אם הבקשה קשורה לפעולה על מחשב.
-- `SUPPORTED`: בודקת האם קיים כלי מתאים ומפעילה אותו.
-- `UNSUPPORTED`: מחזירה `unsupported` עבור כלים לא נתמכים.
-- `IRRELEVANT`: מחזירה `irrelevant` עבור בקשות שאינן קשורות להפעלת כלים.
-- `STRUCTURED OUTPUT`: תמיד JSON תקין עם שדה `type`.
-- `VALIDATION`: ביצוע אימות עם AJV.
-- `ERROR HANDLING`: טיפול בשגיאות API ושגיאות JSON.
+Requirements implemented
+----------------------
+- Understand user intent and classify requests (`UNDERSTAND`).
+- Detect whether a request is a computer action (`COMPUTER ACTION`).
+- Execute supported tools (`SUPPORTED`).
+- Return `unsupported` for not-implemented tools (`UNSUPPORTED`).
+- Return `irrelevant` for off-topic requests (`IRRELEVANT`).
+- Enforce structured JSON-only output (`STRUCTURED OUTPUT`).
+- Validate inputs/outputs with AJV (`VALIDATION`).
+- Robust error handling for API errors and invalid JSON (`ERROR HANDLING`).
 
-## כלים ששימשו לפיתוח
+Development tools
+-----------------
 - Node.js
 - Express
 - Angular
-- OpenAI SDK
+- OpenAI Node SDK
 - AJV
-- TypeScript/JavaScript
+- JavaScript/TypeScript
 
-## הוראות הפעלה
-1. בשורש השרת: `npm install`
-2. לשם הפעלת השרת: `npm start`
-3. בשורש הלקוח: `npm install`
-4. הפעלת הלקוח: `npm start` (Angular)
+Run instructions
+----------------
+1. In the server folder: `npm install`
+2. Start the server: `npm start`
+3. In the client folder: `npm install`
+4. Start the client (Angular): `npm start`
 
-## Prompt files
-- Canonical system prompt: `agentPrompts.js` (root) — זהו הטקסט המדויק שנשלח כ־system prompt ל‑OpenAI.
-- Prompt documentation: `PROMPT_README.md` (root) — תיעוד מלא של הפרומפט, ה‑function schema ודוגמאות.
+Prompt files and documentation
+------------------------------
+- Canonical system prompt: `agentPrompts.js` (root) — the exact system prompt string used at runtime.
+- Prompt documentation: `PROMPT_README.md` (root) — contains the prompt text, function schema, validation rules and example inputs/outputs.
 
-## Reports
-- Canonical smoke-test outputs: `reports/tool-outputs.jsonl` — JSONL עם דוגמות תגובה לכל כלי ולתרחישים (supported/unsupported/irrelevant/error).
+Reports
+-------
+- `reports/tool-outputs.jsonl` — canonical smoke-test outputs for supported tools and scenarios (supported/unsupported/irrelevant/error).
 
-## Preparing for GitHub
-1. ודא שאין מפתחות או סודות בקבצים (`.env` לא ישותף).
-2. קבצים לא להעלות: `node_modules/`, `logs/`, `reports/tool-outputs.jsonl` (מופיע גם ב־.gitignore כברירת מחדל).
-3. פקודות לדחיפה ל־GitHub:
+Preparing for GitHub
+--------------------
+1. Ensure no secrets are committed (keep OpenAI API key in environment variables only).
+2. The repository already contains a `.gitignore` excluding `node_modules`, `logs`, and local env files.
+3. To push to GitHub:
 ```bash
 git add .
 git commit -m "Add prompt, prompt README, reports, and .gitignore"
 git push origin main
 ```
 
-## הערות
-- השירות משתמש ב־`/api/agent` בלבד כאינטגרציה עם הלקוח.
+Notes
+-----
+- The server expects to receive only `POST /api/agent` requests from the client.
+- If you update the prompt, increment its version in `PROMPT_README.md` and document the change.
